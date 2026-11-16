@@ -172,7 +172,12 @@ def check_docs(titles, folders):
         if f"## {title}\n" not in prompts:
             errors.append(f"copy-paste-prompts.md has no prompt headed '## {title}'")
     check_command_lines("copy-paste-prompts.md", prompts, errors)
-    agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    agents_path = ROOT / "AGENTS.md"
+    if not agents_path.is_file():
+        # Installed copy (~/.claude/skills) holds only the skill folders and saas-ads-shared; AGENTS.md stays in the clone.
+        print("note: AGENTS.md not found next to the skills (installed copy); its checks run in the cloned pack")
+        return errors
+    agents = agents_path.read_text(encoding="utf-8")
     check_command_lines("AGENTS.md", agents, errors)
     for target in sorted(set(re.findall(r"`([a-z0-9-]+-saas-ads)`", agents))):
         if target not in folders:

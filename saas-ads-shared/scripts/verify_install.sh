@@ -8,8 +8,10 @@ tmp=$(mktemp -d)
 trap 'rm -rf "$tmp"' EXIT
 if [ -d "$source" ]; then cp -R "$source" "$tmp/saas-ads-claude-skills"; else git clone "$source" "$tmp/saas-ads-claude-skills"; fi
 # A decoy shared folder proves the skills resolve their own pack folder, not a neighbor.
+# The marker is built at run time, so this script's own text (shipped in saas-ads-shared) never matches it.
+marker="decoy-$$-$(date +%s)"
 mkdir -p "$tmp/home/.claude/skills/references"
-echo decoy > "$tmp/home/.claude/skills/references/thresholds.md"
+echo "$marker" > "$tmp/home/.claude/skills/references/thresholds.md"
 (cd "$tmp" && HOME="$tmp/home" sh -c 'mkdir -p ~/.claude/skills; cp -r saas-ads-claude-skills/*saas-ads saas-ads-claude-skills/saas-ads-shared ~/.claude/skills/')
 i="$tmp/home/.claude/skills"
 count=$(find "$i" -mindepth 1 -maxdepth 1 -type d -name '*saas-ads' -exec test -f '{}/SKILL.md' \; -print | wc -l | tr -d ' ')
@@ -21,7 +23,7 @@ for s in "$i"/*saas-ads/SKILL.md; do
     paths=$((paths+1))
   done
 done
-if grep -R 'decoy' "$i/saas-ads-shared" >/dev/null; then echo "FAIL: decoy resolved"; exit 1; fi
+if grep -R -- "$marker" "$i/saas-ads-shared" >/dev/null; then echo "FAIL: decoy resolved"; exit 1; fi
 python3 "$i/saas-ads-shared/scripts/validate-skills.py" --expect "$expected"
 python3 "$i/saas-ads-shared/scripts/selftest.py"
 d="$i/saas-ads-shared/examples/data"

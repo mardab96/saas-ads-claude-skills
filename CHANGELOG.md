@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.3] - 2026-11-16
+
+### Fixed
+
+- `verify_install.sh` failed on every install from a clone with `FAIL: decoy resolved`: it searched the installed `saas-ads-shared` folder for the word `decoy`, and its own text, shipped in that folder, contains it. The decoy now carries a marker built at run time.
+- `validate-skills.py` crashed in an installed copy (`~/.claude/skills`), because it read `AGENTS.md`, which stays in the clone. It now prints a note and runs the `AGENTS.md` checks only in the cloned pack.
+
 ## [1.2.2] - 2026-11-18
 
 ### Added
