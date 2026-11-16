@@ -1,0 +1,7 @@
+channel,period,spend,new_paying_customers
+google_search_nonbrand,before,6000,20
+google_search_nonbrand,after,7200,24
+meta_prospecting,before,8000,18
+meta_prospecting,after,9600,20
+meta_retargeting,before,1200,20
+meta_retargeting,after,1300,21
